@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AudioLines, BrainCircuit, ChevronRight, CircleHelp, Info, LoaderCircle, Radio, ScanLine, ShieldCheck, Sparkles } from "lucide-react";
+import { AudioLines, BrainCircuit, ChevronRight, Info, LoaderCircle, Radio, ScanLine, ShieldCheck, Sparkles } from "lucide-react";
 import { AlertCard } from "./components/AlertCard";
 import { AlertHistory } from "./components/AlertHistory";
 import { AskEdith } from "./components/AskEdith";
 import { CameraPreview } from "./components/CameraPreview";
+import { GuidedTour } from "./components/GuidedTour";
 import { PrivacyStatus } from "./components/PrivacyStatus";
+import { SiteNav } from "./components/SiteNav";
 import { demoScenes } from "./demo/demoScenes";
 import { prioritizeScene } from "./engine/prioritization";
 import { DuplicateSuppressor } from "./engine/duplicateSuppression";
@@ -16,6 +18,8 @@ import type { Alert, AlertHistoryItem } from "./types/alert";
 import type { SceneAnalysis } from "./types/scene";
 
 type CameraStatus = "unavailable" | "pending" | "denied" | "ready" | "analyzing" | "error";
+
+type AppProps = { onNavigate: (path: "/" | "/about") => void };
 
 function captureFrame(video: HTMLVideoElement, canvas: HTMLCanvasElement): Promise<{ image: string; mimeType: string }> {
   if (!video.videoWidth || !video.videoHeight) throw new Error("The camera frame is not ready yet.");
@@ -44,7 +48,7 @@ function captureFrame(video: HTMLVideoElement, canvas: HTMLCanvasElement): Promi
   });
 }
 
-export default function App() {
+export default function App({ onNavigate }: AppProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -61,6 +65,7 @@ export default function App() {
   const [muted, setMuted] = useState(false);
   const [assistantResponse, setAssistantResponse] = useState("");
   const [speechAvailable] = useState(() => canSpeak());
+  const [tourOpen, setTourOpen] = useState(false);
 
   useEffect(() => {
     saveHistory(history);
@@ -154,6 +159,7 @@ export default function App() {
 
   return (
     <main className="app-shell">
+      <SiteNav active="app" onNavigate={onNavigate} onTour={() => setTourOpen(true)} />
       <header className="topbar">
         <div className="brand-lockup">
           <div className="brand-mark" aria-hidden="true"><AudioLines size={22} /></div>
@@ -168,7 +174,7 @@ export default function App() {
         </div>
       </header>
 
-      <section className="hero-intro">
+      <section className="hero-intro" data-tour="hero">
         <div>
           <span className="eyebrow">Risk-prioritized environmental awareness</span>
           <h1>Know what matters <em>right now.</em></h1>
@@ -178,9 +184,9 @@ export default function App() {
 
       <div className="console-grid">
         <section className="left-column">
-          <CameraPreview videoRef={videoRef} canvasRef={canvasRef} status={cameraStatus} error={cameraError} />
-          <div className="scan-toolbar panel">
-            <div className="scan-toolbar__copy">
+          <div data-tour="camera"><CameraPreview videoRef={videoRef} canvasRef={canvasRef} status={cameraStatus} error={cameraError} /></div>
+          <div className="scan-toolbar panel" data-tour="scan">
+            <div className="scan-toolbar__copy" data-tour="scene-analysis">
               <div className="scan-toolbar__title"><ScanLine size={18} aria-hidden="true" /><strong>{isDemoMode ? "Run a prepared scene" : "Scan the environment"}</strong></div>
               <span>{isDemoMode ? "The prepared scene uses the same perception-to-alert engine." : "One frame. One decision. One useful alert."}</span>
             </div>
@@ -192,7 +198,7 @@ export default function App() {
 
           {analysisError && <div className="error-banner" role="alert"><Info size={18} aria-hidden="true" /><div><strong>Live analysis unavailable.</strong><span>{analysisError}</span></div><button type="button" onClick={() => setIsDemoMode(true)}>Use Demo Mode</button></div>}
 
-          <section className="panel demo-panel" aria-labelledby="demo-title">
+          <section className="panel demo-panel" aria-labelledby="demo-title" data-tour="demo-mode">
             <div className="panel-heading">
               <div><span className="eyebrow">Controlled verification</span><h2 id="demo-title">Demo Mode</h2></div>
               <label className="switch-label"><span>Use prepared scenes</span><input type="checkbox" checked={isDemoMode} onChange={(event) => setIsDemoMode(event.target.checked)} /><span className="switch" aria-hidden="true" /></label>
@@ -211,18 +217,19 @@ export default function App() {
         </section>
 
         <aside className="right-column">
-          <AlertCard alert={currentAlert} muted={muted} onReplay={replayAlert} onToggleMute={() => setMuted((value) => !value)} />
-          <AskEdith onAsk={handleAsk} />
+          <div data-tour="decision-engine"><AlertCard alert={currentAlert} muted={muted} onReplay={replayAlert} onToggleMute={() => setMuted((value) => !value)} /></div>
+          <div data-tour="ask-edith"><AskEdith onAsk={handleAsk} /></div>
           {assistantResponse && <div className="assistant-response" role="status"><Sparkles size={17} aria-hidden="true" /><span>{assistantResponse}</span></div>}
-          <AlertHistory history={history} onClear={() => setHistory([])} />
-          <PrivacyStatus />
+          <div data-tour="history"><AlertHistory history={history} onClear={() => setHistory([])} /></div>
+          <div data-tour="privacy"><PrivacyStatus /></div>
         </aside>
       </div>
 
-      <footer className="footer-note">
-        <div><BrainCircuit size={15} aria-hidden="true" /><span>Perception ≠ decision. EDITH’s relevance engine chooses what deserves attention.</span></div>
+      <footer className="footer-note" data-tour="limitations">
+        <div data-tour="perception-status"><BrainCircuit size={15} aria-hidden="true" /><span>Perception ≠ decision. EDITH’s relevance engine chooses what deserves attention.</span></div>
         <span>{speechAvailable ? "Speech output available" : "Speech output unavailable"}</span>
       </footer>
+      <GuidedTour open={tourOpen} onClose={() => setTourOpen(false)} />
     </main>
   );
 }

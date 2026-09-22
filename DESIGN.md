@@ -105,3 +105,9 @@ Controls use a medium radius with crisp borders. The Scan control may be larger 
 - Do make Demo Mode visibly honest and visually distinct from Live Mode.
 - Do not narrate or display a full object list as the product's main output.
 - Do not use color, animation, or decorative HUD elements to substitute for clear language.
+
+## Story surface
+
+The `/about` route is a cinematic project-story surface that extends the console language without becoming a generic marketing page. It uses the same ink, panel, signal mint, urgent amber, periwinkle, and type roles as the app, but gives them more negative space and surreal system metaphors: an eye/camera orbit, object convergence, a vertical architecture diagram, and a horizontal research roadmap. Scroll reveals are restrained and content remains available when reduced motion is requested.
+
+Guided Mode is a shared behavior surface rather than a separate tutorial mockup. Its steps resolve selectors against the real console, spotlight the current control, keep progress and focus accessible, and gracefully omit unavailable targets.

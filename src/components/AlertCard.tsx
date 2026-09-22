@@ -26,7 +26,7 @@ export function AlertCard({ alert, muted, onReplay, onToggleMute }: AlertCardPro
   const Icon = current.priority === "urgent" ? AlertTriangle : current.priority === "informational" ? Info : CheckCircle2;
 
   return (
-    <section className={`panel alert-card alert-card--${current.priority}`} aria-labelledby="current-alert-title">
+    <section className={`panel alert-card alert-card--${current.priority}`} aria-labelledby="current-alert-title" data-tour="current-alert">
       <div className="panel-heading">
         <div>
           <span className="eyebrow">Current alert</span>
@@ -42,8 +42,8 @@ export function AlertCard({ alert, muted, onReplay, onToggleMute }: AlertCardPro
         </div>
         <p className="alert-card__message">“{current.spoken_alert}”</p>
       </div>
-      <AttentionRail direction={current.direction} />
-      <div className="alert-card__actions">
+      <div data-tour="attention-rail"><AttentionRail direction={current.direction} /></div>
+      <div className="alert-card__actions" data-tour="speech-controls">
         <button type="button" className="button button--secondary" onClick={onReplay} disabled={!alert}>
           <Volume2 size={17} aria-hidden="true" /> Replay
         </button>

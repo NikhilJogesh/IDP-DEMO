@@ -20,6 +20,13 @@ npm run dev
 
 Open [http://127.0.0.1:5173](http://127.0.0.1:5173).
 
+The application has two presentation surfaces:
+
+- `/` — the EDITH assistive control console with live camera scanning, Demo Mode, Ask EDITH, speech, history, privacy status, and Guided Mode.
+- `/about` — the interactive project story explaining the perception → relevance → prioritization → audio architecture.
+
+Use **Take the tour** in the navigation to walk through the real console UI. Guided Mode highlights the live controls rather than showing separate mock screens.
+
 For Live Mode, choose one of these provider configurations in `.env`.
 
 ### Free local mode — Ollama
